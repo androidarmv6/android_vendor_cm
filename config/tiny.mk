@@ -183,4 +183,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
   ro.modversion=$(CM_VERSION)
 
 include frameworks/base/data/sounds/OldAudio.mk
+
+# BT config
+PRODUCT_COPY_FILES += \
+    system/bluetooth/data/main.conf:system/etc/bluetooth/main.conf
+
 -include $(WORKSPACE)/hudson/image-auto-bits.mk
