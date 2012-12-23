@@ -116,7 +116,6 @@ PRODUCT_PACKAGES += \
 
 # Optional CM packages
 PRODUCT_PACKAGES += \
-    SoundRecorder \
     Basic
 
 # Custom CM packages
