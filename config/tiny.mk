@@ -188,4 +188,7 @@ include frameworks/base/data/sounds/OldAudio.mk
 PRODUCT_COPY_FILES += \
     system/bluetooth/data/main.conf:system/etc/bluetooth/main.conf
 
+# T-Mobile theme engine
+include vendor/cm/config/themes_common.mk
+
 -include $(WORKSPACE)/hudson/image-auto-bits.mk
