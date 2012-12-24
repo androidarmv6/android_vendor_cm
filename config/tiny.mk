@@ -121,7 +121,6 @@ PRODUCT_PACKAGES += \
 # Custom CM packages
 PRODUCT_PACKAGES += \
     Trebuchet \
-    Gallery2 \
     Camera \
     libcyanogen-dsp \
     audio_effects.conf \
