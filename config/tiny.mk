@@ -138,8 +138,6 @@ PRODUCT_PACKAGES += \
     mke2fs \
     tune2fs \
     bash \
-    htop \
-    powertop \
     lsof
 
 PRODUCT_PACKAGE_OVERLAYS += vendor/cm/overlay/dictionaries
