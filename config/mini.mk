@@ -16,6 +16,9 @@ PRODUCT_PACKAGES += \
     LockClock
 
 PRODUCT_PACKAGES += \
+    CellBroadcastReceiver
+
+PRODUCT_PACKAGES += \
     Development \
     Email2 \
     Exchange2 \
