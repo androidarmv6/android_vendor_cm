@@ -143,7 +143,8 @@ PRODUCT_PACKAGES += \
     libcyanogen-dsp \
     audio_effects.conf \
     CMFileManager \
-    HwaSettings
+    HwaSettings \
+    PermissionsManager
 
 # Extra tools in CM
 PRODUCT_PACKAGES += \
