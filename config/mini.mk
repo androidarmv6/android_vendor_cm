@@ -13,8 +13,7 @@ PRODUCT_PACKAGES += \
     Apollo \
     CMFileManager \
     Basic \
-    LockClock \
-    Babel
+    LockClock
 
 PRODUCT_PACKAGES += \
     CellBroadcastReceiver

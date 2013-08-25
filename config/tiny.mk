@@ -70,6 +70,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.com.android.dateformat=MM-dd-yyyy \
     ro.com.android.dataroaming=false
 
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.build.selinux=1 \
+    persist.sys.root_access=1
+
 #ifneq ($(TARGET_BUILD_VARIANT),eng)
 ## Enable ADB authentication
 #ADDITIONAL_DEFAULT_PROPERTIES += ro.adb.secure=1
@@ -112,6 +116,17 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/bin/modelid_cfg.sh:system/bin/modelid_cfg.sh
 
+# Terminal Emulator (MOVED TO MINI.MK)
+#PRODUCT_COPY_FILES +=  \
+#    vendor/cm/proprietary/Term.apk:system/app/Term.apk \
+#    vendor/cm/proprietary/lib/armeabi/libjackpal-androidterm4.so:system/lib/libjackpal-androidterm4.so
+
+# Bring in camera effects
+#PRODUCT_COPY_FILES +=  \
+#    vendor/cm/prebuilt/common/media/LMprec_508.emd:system/media/LMprec_508.emd \
+#    vendor/cm/prebuilt/common/media/PFFprec_600.emd:system/media/PFFprec_600.emd
+
+
 # Enable SIP+VoIP on all targets
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.sip.voip.xml:system/etc/permissions/android.software.sip.voip.xml
@@ -136,7 +151,6 @@ include frameworks/base/data/sounds/OldAudio.mk
 # Required CM packages
 PRODUCT_PACKAGES += \
     LatinIME \
-    SpareParts \
     Superuser \
     su
 
@@ -148,12 +162,16 @@ PRODUCT_PACKAGES += \
 # Custom CM packages
 PRODUCT_PACKAGES += \
     Trebuchet \
-    Camera \
     libcyanogen-dsp \
     audio_effects.conf \
     CMFileManager \
     HwaSettings \
     PermissionsManager
+
+# CM Hardware Abstraction Framework
+PRODUCT_PACKAGES += \
+    org.cyanogenmod.hardware \
+    org.cyanogenmod.hardware.xml
 
 # Extra tools in CM
 PRODUCT_PACKAGES += \
@@ -230,5 +248,5 @@ PRODUCT_PROPERTY_OVERRIDES += \
   ro.cm.version=$(CM_VERSION) \
   ro.modversion=$(CM_VERSION)
 
-
+-include vendor/cm/sepolicy/sepolicy.mk
 -include $(WORKSPACE)/hudson/image-auto-bits.mk
