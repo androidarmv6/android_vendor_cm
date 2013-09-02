@@ -116,10 +116,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/bin/modelid_cfg.sh:system/bin/modelid_cfg.sh
 
-# block stock OTAs
-PRODUCT_COPY_FILES += \
-    vendor/cm/prebuilt/common/bin/otablock:system/bin/otablock
-
 # Terminal Emulator (MOVED TO MINI.MK)
 #PRODUCT_COPY_FILES +=  \
 #    vendor/cm/proprietary/Term.apk:system/app/Term.apk \
