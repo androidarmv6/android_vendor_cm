@@ -46,8 +46,7 @@ $(eval TARGET_BOOTANIMATION_NAME := $(shell \
 endef
 $(foreach size,$(bootanimation_sizes), $(call check_and_set_bootanimation,$(size)))
 
-PRODUCT_COPY_FILES += \
-    vendor/cm/prebuilt/common/bootanimation/$(TARGET_BOOTANIMATION_NAME).zip:system/media/bootanimation.zip
+PRODUCT_BOOTANIMATION := vendor/cm/prebuilt/common/bootanimation/$(TARGET_BOOTANIMATION_NAME).zip
 endif
 
 ifdef CM_NIGHTLY
@@ -84,11 +83,13 @@ PRODUCT_COPY_FILES += \
     vendor/cm/CHANGELOG.mkdn:system/etc/CHANGELOG-CM.txt
 
 # Backup Tool
+ifneq ($(WITH_GMS),true)
 PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/bin/backuptool.sh:system/bin/backuptool.sh \
     vendor/cm/prebuilt/common/bin/backuptool.functions:system/bin/backuptool.functions \
     vendor/cm/prebuilt/common/bin/50-cm.sh:system/addon.d/50-cm.sh \
     vendor/cm/prebuilt/common/bin/blacklist:system/addon.d/blacklist
+endif
 
 # init.d support
 PRODUCT_COPY_FILES += \
@@ -138,10 +139,6 @@ PRODUCT_COPY_FILES += \
 # This is CM!
 PRODUCT_COPY_FILES += \
     vendor/cm/config/permissions/com.cyanogenmod.android.xml:system/etc/permissions/com.cyanogenmod.android.xml
-
-# Don't export PS1 in /system/etc/mkshrc.
-PRODUCT_COPY_FILES += \
-    vendor/cm/prebuilt/common/etc/mkshrc:system/etc/mkshrc
 
 # T-Mobile theme engine
 include vendor/cm/config/themes_common.mk
@@ -208,25 +205,41 @@ PRODUCT_VERSION_MAJOR = 10
 PRODUCT_VERSION_MINOR = 2
 PRODUCT_VERSION_MAINTENANCE = 0-RC0
 
-# Set CM_BUILDTYPE
-ifdef CM_NIGHTLY
-    CM_BUILDTYPE := NIGHTLY
+# Set CM_BUILDTYPE from the env RELEASE_TYPE, for jenkins compat
+
+ifndef CM_BUILDTYPE
+    ifdef RELEASE_TYPE
+        # Starting with "CM_" is optional
+        RELEASE_TYPE := $(shell echo $(RELEASE_TYPE) | sed -e 's|^CM_||g')
+        CM_BUILDTYPE := $(RELEASE_TYPE)
+    endif
 endif
-ifdef CM_EXPERIMENTAL
-    CM_BUILDTYPE := EXPERIMENTAL
-endif
-ifdef CM_RELEASE
-    CM_BUILDTYPE := RELEASE
+
+# Filter out random types, so it'll reset to UNOFFICIAL
+ifeq ($(filter RELEASE NIGHTLY SNAPSHOT EXPERIMENTAL,$(CM_BUILDTYPE)),)
+    CM_BUILDTYPE :=
 endif
 
 ifdef CM_BUILDTYPE
-    ifdef CM_EXTRAVERSION
-        # Force build type to EXPERIMENTAL
-        CM_BUILDTYPE := EXPERIMENTAL
-        # Remove leading dash from CM_EXTRAVERSION
-        CM_EXTRAVERSION := $(shell echo $(CM_EXTRAVERSION) | sed 's/-//')
-        # Add leading dash to CM_EXTRAVERSION
-        CM_EXTRAVERSION := -$(CM_EXTRAVERSION)
+    ifneq ($(CM_BUILDTYPE), SNAPSHOT)
+        ifdef CM_EXTRAVERSION
+            # Force build type to EXPERIMENTAL
+            CM_BUILDTYPE := EXPERIMENTAL
+            # Remove leading dash from CM_EXTRAVERSION
+            CM_EXTRAVERSION := $(shell echo $(CM_EXTRAVERSION) | sed 's/-//')
+            # Add leading dash to CM_EXTRAVERSION
+            CM_EXTRAVERSION := -$(CM_EXTRAVERSION)
+        endif
+    else
+        ifndef CM_EXTRAVERSION
+            # Force build type to EXPERIMENTAL, SNAPSHOT mandates a tag
+            CM_BUILDTYPE := EXPERIMENTAL
+        else
+            # Remove leading dash from CM_EXTRAVERSION
+            CM_EXTRAVERSION := $(shell echo $(CM_EXTRAVERSION) | sed 's/-//')
+            # Add leading dash to CM_EXTRAVERSION
+            CM_EXTRAVERSION := -$(CM_EXTRAVERSION)
+        endif
     endif
 else
     # If CM_BUILDTYPE is not defined, set to UNOFFICIAL
@@ -234,13 +247,13 @@ else
     CM_EXTRAVERSION :=
 endif
 
-ifdef CM_RELEASE
+ifeq ($(CM_BUILDTYPE), RELEASE)
     CM_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR).$(PRODUCT_VERSION_MAINTENANCE)$(PRODUCT_VERSION_DEVICE_SPECIFIC)-$(CM_BUILD)
 else
     ifeq ($(PRODUCT_VERSION_MINOR),0)
-        CM_VERSION := $(PRODUCT_VERSION_MAJOR)-$(shell date -u +%Y%m%d)-$(CM_BUILDTYPE)-$(CM_BUILD)$(CM_EXTRAVERSION)
+        CM_VERSION := $(PRODUCT_VERSION_MAJOR)-$(shell date -u +%Y%m%d)-$(CM_BUILDTYPE)$(CM_EXTRAVERSION)-$(CM_BUILD)
     else
-        CM_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(shell date -u +%Y%m%d)-$(CM_BUILDTYPE)-$(CM_BUILD)$(CM_EXTRAVERSION)
+        CM_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(shell date -u +%Y%m%d)-$(CM_BUILDTYPE)$(CM_EXTRAVERSION)-$(CM_BUILD)
     endif
 endif
 
