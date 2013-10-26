@@ -199,6 +199,9 @@ PRODUCT_PACKAGES += \
 #    rsync
 
 PRODUCT_PACKAGE_OVERLAYS += vendor/cm/overlay/dictionaries
+ifneq ($(filter uk_UA,$(PRODUCT_LOCALES)),)
+	PRODUCT_PACKAGE_OVERLAYS += vendor/cm/overlay/dictionaries-uk
+endif
 PRODUCT_PACKAGE_OVERLAYS += vendor/cm/overlay/common
 
 PRODUCT_VERSION_MAJOR = 10
