@@ -145,6 +145,9 @@ include vendor/cm/config/themes_common.mk
 
 include frameworks/base/data/sounds/OldAudio.mk
 
+# APNs
+$(call inherit-product, vendor/cm/config/telephony.mk)
+
 # Required CM packages
 PRODUCT_PACKAGES += \
     LatinIME \
