@@ -30,22 +30,56 @@ if [ ! -f "$OTAPACKAGE" ]; then
 	exit 1
 fi
 
-# Determine what to name the new package
-MODVERSION=`sed -n -e'/ro\.cm\.version/s/^.*=//p' $OUT/system/build.prop`
-echo -e $CL_CYN"MODVERSION: $MODVERSION"$CL_RST
-OUTFILE=$OUT/cm-$MODVERSION.zip
+OPTICHARGER=$ANDROID_BUILD_TOP/vendor/cm/tools/opticharger
+QUIET=-q
+REPACK=$OUT/repack.d
+if [ -d $REPACK ]; then
+	printf "Sanitizing environment..."
+	rm -rf $REPACK
+	echo
+fi
 
-ln -f $OTAPACKAGE $OUTFILE
-
-# Create a md5 checksum image of the repacked package
+# Unpack the otapackage and opticharge all apks
+mkdir -p $REPACK/ota
 (
-img=`basename $OUTFILE`
-cd `dirname $OUTFILE`
-$MD5 $img >$img.md5sum
+cd $REPACK/ota
+printf "Unpacking $OTAPACKAGE..."
+unzip $QUIET $OTAPACKAGE
 echo
-echo -e $CL_GRN"Package complete: $OUTFILE"$CL_RST
-echo -e $CL_GRN"md5: $(cat $img.md5sum | awk '{ print $1 }')"$CL_RST
-echo
+
+# Move all apks to the same directory so xargs can
+# use also with framework-res.apk. This allow process
+# framework-res.apk in parallel with other apks
+mkdir -p $REPACK/parallel
+cd $REPACK/parallel
+cp $REPACK/ota/system/framework/framework-res.apk .
+cp $REPACK/ota/system/app/*.apk .
+
+# Do optimization in parallel
+find ./ -name \*.apk | $XARGS $OPTICHARGER
+
+# Move optimized apks to repack directory
+mv -f $REPACK/parallel/framework-res.apk $REPACK/ota/system/framework/framework-res.apk
+mv -f $REPACK/parallel/*.apk $REPACK/ota/system/app/
+
+# Optimize & move "extras" apps
+if [ -d $REPACK/ota/extras/app ]; then
+	cp $REPACK/ota/extras/app/*.apk .
+	find ./ -name \*.apk | $XARGS $OPTICHARGER
+	mv -f $REPACK/parallel/*.apk $REPACK/ota/extras/app/
+fi
+
+# Return to directory
+cd $REPACK/ota
+rm -rf $REPACK/parallel
 )
+
+# Pack it up
+printf "Zipping package..."
+( cd $REPACK/ota; zip $QUIET -r $REPACK/update.zip .; mv -f $REPACK/update.zip $OTAPACKAGE )
+echo
+printf "Cleaning up..."
+rm -rf $REPACK
+echo
 
 exit 0
