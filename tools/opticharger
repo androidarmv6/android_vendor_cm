@@ -14,7 +14,7 @@ QUIET=1
 BASE=`pwd`
 BRUTECRUSH="-brute"
 TMPDIR=/tmp/opticharge-$$
-NINEPATCH=0
+NINEPATCH=1
 
 . $ANDROID_BUILD_TOP/vendor/cm/tools/functions
 
