@@ -46,6 +46,7 @@ fi
 
 if [ "$(which pngquant)" != "" ];
 then
+    NINEPATCH=1
     optimize_png () {
         pngquant --speed 1 --force --ext .png $1 1> /dev/null 2> /dev/null
     }
