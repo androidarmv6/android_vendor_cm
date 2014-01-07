@@ -27,7 +27,7 @@ case "$1" in
           echo "$(($2 * 1024))" > $SYSFS_PATH/disksize
           mkswap $DEV >/dev/null
       fi
-      swapon $DEV
+      swapon -p 1 $DEV
    ;;
 
    stop)
