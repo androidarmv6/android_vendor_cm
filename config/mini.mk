@@ -6,7 +6,6 @@ PRODUCT_COPY_FILES +=  \
     vendor/cm/proprietary/lib/armeabi/libjackpal-androidterm4.so:system/lib/libjackpal-androidterm4.so
 
 PRODUCT_PACKAGES += \
-    Trebuchet \
     DSPManager \
     libcyanogen-dsp \
     audio_effects.conf \

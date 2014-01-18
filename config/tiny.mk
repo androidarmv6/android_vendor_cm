@@ -1,26 +1,9 @@
 PRODUCT_BRAND ?= cyanogenmod
 
--include vendor/cm-priv/keys.mk
 SUPERUSER_EMBEDDED := true
 SUPERUSER_PACKAGE_PREFIX := com.android.settings.cyanogenmod.superuser
 
-# To deal with CM9 specifications
-# TODO: remove once all devices have been switched
-ifneq ($(TARGET_BOOTANIMATION_NAME),)
-TARGET_SCREEN_DIMENSIONS := $(subst -, $(space), $(subst x, $(space), $(TARGET_BOOTANIMATION_NAME)))
-ifeq ($(TARGET_SCREEN_WIDTH),)
-TARGET_SCREEN_WIDTH := $(word 2, $(TARGET_SCREEN_DIMENSIONS))
-endif
-ifeq ($(TARGET_SCREEN_HEIGHT),)
-TARGET_SCREEN_HEIGHT := $(word 3, $(TARGET_SCREEN_DIMENSIONS))
-endif
-endif
-
 ifneq ($(TARGET_SCREEN_WIDTH) $(TARGET_SCREEN_HEIGHT),$(space))
-
-# clear TARGET_BOOTANIMATION_NAME in case it was set for CM9 purposes
-TARGET_BOOTANIMATION_NAME :=
-
 # determine the smaller dimension
 TARGET_BOOTANIMATION_SIZE := $(shell \
   if [ $(TARGET_SCREEN_WIDTH) -lt $(TARGET_SCREEN_HEIGHT) ]; then \
@@ -59,19 +42,25 @@ endif
 
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
 
+ifeq ($(PRODUCT_GMS_CLIENTID_BASE),)
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.com.google.clientidbase=android-google
+else
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.com.google.clientidbase=$(PRODUCT_GMS_CLIENTID_BASE)
+endif
+
 PRODUCT_PROPERTY_OVERRIDES += \
     keyguard.no_require_sim=true \
     ro.url.legal=http://www.google.com/intl/%s/mobile/android/basic/phone-legal.html \
     ro.url.legal.android_privacy=http://www.google.com/intl/%s/mobile/android/basic/privacy.html \
-    ro.com.google.clientidbase=android-google \
     ro.com.android.wifi-watchlist=GoogleGuest \
     ro.setupwizard.enterprise_mode=1 \
     ro.com.android.dateformat=MM-dd-yyyy \
     ro.com.android.dataroaming=false
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.build.selinux=1 \
-    persist.sys.root_access=1
+    ro.build.selinux=1
 
 #ifneq ($(TARGET_BUILD_VARIANT),eng)
 ## Enable ADB authentication
@@ -112,16 +101,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/bin/modelid_cfg.sh:system/bin/modelid_cfg.sh
 
-# Terminal Emulator (MOVED TO MINI.MK)
-#PRODUCT_COPY_FILES +=  \
-#    vendor/cm/proprietary/Term.apk:system/app/Term.apk \
-#    vendor/cm/proprietary/lib/armeabi/libjackpal-androidterm4.so:system/lib/libjackpal-androidterm4.so
-
 # Bring in camera effects
 #PRODUCT_COPY_FILES +=  \
 #    vendor/cm/prebuilt/common/media/LMprec_508.emd:system/media/LMprec_508.emd \
 #    vendor/cm/prebuilt/common/media/PFFprec_600.emd:system/media/PFFprec_600.emd
-
 
 # Enable SIP+VoIP on all targets
 PRODUCT_COPY_FILES += \
@@ -146,12 +129,12 @@ $(call inherit-product, vendor/cm/config/telephony.mk)
 # Required CM packages
 PRODUCT_PACKAGES += \
     LatinIME \
-    Superuser \
-    su
+    BluetoothExt
 
 # Optional CM packages
 PRODUCT_PACKAGES += \
     Basic \
+    libemoji \
     LiveWallpapersPicker
 
 # Custom CM packages
@@ -195,6 +178,32 @@ PRODUCT_PACKAGES += \
 # rsync
 #PRODUCT_PACKAGES += \
 #    rsync
+
+# These packages are excluded from user builds
+ifneq ($(TARGET_BUILD_VARIANT),user)
+
+PRODUCT_PACKAGES += \
+    procmem \
+    procrank \
+    Superuser \
+    su
+
+# Terminal Emulator (MOVED TO MINI.MK)
+#PRODUCT_COPY_FILES +=  \
+#    vendor/cm/proprietary/Term.apk:system/app/Term.apk \
+#    vendor/cm/proprietary/lib/armeabi/libjackpal-androidterm4.so:system/lib/libjackpal-androidterm4.so
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.root_access=1
+else
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.root_access=0
+
+endif
+
+# easy way to extend to add more packages
+-include vendor/extra/product.mk
 
 #PRODUCT_PACKAGE_OVERLAYS += vendor/cm/overlay/dictionaries
 ifneq ($(filter uk_UA,$(PRODUCT_LOCALES)),)
@@ -248,8 +257,22 @@ else
     CM_EXTRAVERSION :=
 endif
 
+ifeq ($(CM_BUILDTYPE), UNOFFICIAL)
+    ifneq ($(TARGET_UNOFFICIAL_BUILD_ID),)
+        CM_EXTRAVERSION := -$(TARGET_UNOFFICIAL_BUILD_ID)
+    endif
+endif
+
 ifeq ($(CM_BUILDTYPE), RELEASE)
-    CM_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR).$(PRODUCT_VERSION_MAINTENANCE)$(PRODUCT_VERSION_DEVICE_SPECIFIC)-$(CM_BUILD)
+    ifndef TARGET_VENDOR_RELEASE_BUILD_ID
+        CM_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR).$(PRODUCT_VERSION_MAINTENANCE)$(PRODUCT_VERSION_DEVICE_SPECIFIC)-$(CM_BUILD)
+    else
+        ifeq ($(TARGET_BUILD_VARIANT),user)
+            CM_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(TARGET_VENDOR_RELEASE_BUILD_ID)-$(CM_BUILD)
+        else
+            CM_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR).$(PRODUCT_VERSION_MAINTENANCE)$(PRODUCT_VERSION_DEVICE_SPECIFIC)-$(CM_BUILD)
+        endif
+    endif
 else
     ifeq ($(PRODUCT_VERSION_MINOR),0)
         CM_VERSION := $(PRODUCT_VERSION_MAJOR)-$(shell date -u +%Y%m%d)-$(CM_BUILDTYPE)$(CM_EXTRAVERSION)-$(CM_BUILD)
@@ -260,6 +283,33 @@ endif
 
 PRODUCT_PROPERTY_OVERRIDES += \
   ro.cm.version=$(CM_VERSION) \
-  ro.modversion=$(CM_VERSION)
+  ro.modversion=$(CM_VERSION) \
+  ro.cmlegal.url=http://www.cyanogenmod.org/docs/privacy
+
+-include vendor/cm-priv/keys/keys.mk
+
+CM_DISPLAY_VERSION := $(CM_VERSION)
+
+ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),)
+ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/testkey)
+  ifneq ($(CM_BUILDTYPE), UNOFFICIAL)
+    ifndef TARGET_VENDOR_RELEASE_BUILD_ID
+      ifneq ($(CM_EXTRAVERSION),)
+        TARGET_VENDOR_RELEASE_BUILD_ID := $(CM_EXTRAVERSION)
+      else
+        TARGET_VENDOR_RELEASE_BUILD_ID := -$(shell date -u +%Y%m%d)
+      endif
+    else
+      TARGET_VENDOR_RELEASE_BUILD_ID := -$(TARGET_VENDOR_RELEASE_BUILD_ID)
+    endif
+    CM_DISPLAY_VERSION=$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)$(TARGET_VENDOR_RELEASE_BUILD_ID)
+  endif
+endif
+endif
+
+PRODUCT_PROPERTY_OVERRIDES += \
+  ro.cm.display.version=$(CM_DISPLAY_VERSION)
 
 -include $(WORKSPACE)/hudson/image-auto-bits.mk
+
+#-include vendor/cyngn/product.mk
