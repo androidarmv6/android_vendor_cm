@@ -66,8 +66,8 @@
   <apn carrier="Mobistar" mcc="206" mnc="10" apn="mworld.be" user="mobistar" password="mobistar" proxy="212.65.63.143" port="8080" type="default,supl" />
   <apn carrier="BASE Belgium" mcc="206" mnc="20" apn="gprs.base.be" user="base" password="base" type="default,supl" />
   <apn carrier="BASE MMS Belgium" mcc="206" mnc="20" apn="mms.base.be" user="base" password="base" mmsc="http://mmsc.base.be" mmsproxy="217.72.235.1" mmsport="8080" type="mms" />
+  <apn carrier="Mobile Vikings" mcc="206" mnc="20" apn="web.be" user="web" password="web" authenticationtype="PAP" type="default,supl" />
   <apn carrier="Mobile Vikings MMS" mcc="206" mnc="20" apn="mms.be" user="mms" password="mms" mmsc="http://mmsc.be" mmsproxy="217.72.235.1" mmsport="8080" type="mms" />
-  <apn carrier="Mobile Vikings" mcc="206" mnc="20" apn="web.be" user="web" password="web" type="default,supl" />
   <apn carrier="Virgin" mcc="208" mnc="01" apn="ofnew.fr" user="orange" password="orange" type="default,supl" />
   <apn carrier="Orange Internet" mcc="208" mnc="01" apn="orange.fr" user="orange" password="orange" authtype="0" type="dun" />
   <apn carrier="Orange World" mcc="208" mnc="01" apn="orange" user="orange" password="orange" authtype="2" type="default,supl" />
@@ -1495,6 +1495,7 @@
   <apn carrier="CTBC MMS" mcc="724" mnc="32" apn="mms.ctbc.br" user="ctbc" password="1212" mmsc="http://mms.ctbccelular.com.br/was" mmsproxy="172.29.7.70" mmsport="8080" type="mms" />
   <apn carrier="CTBC MMS" mcc="724" mnc="33" apn="mms.ctbc.br" user="ctbc" password="1212" mmsc="http://mms.ctbccelular.com.br/was" mmsproxy="172.29.7.70" mmsport="8080" type="mms" />
   <apn carrier="CTBC MMS" mcc="724" mnc="34" apn="mms.ctbc.br" user="ctbc" password="1212" mmsc="http://mms.ctbccelular.com.br/was" mmsproxy="172.29.7.70" mmsport="8080" type="mms" />
+  <apn carrier="Nextel 3G" mcc="724" mnc="39" apn="datacard.nextel3g.net.br" type="default,supl" />
   <apn carrier="Entel PCS" mcc="730" mnc="01" apn="bam.entelpcs.cl" user="entelpcs" password="entelpcs" proxy="10.99.0.10" port="8080" type="default,supl" />
   <apn carrier="Entel MMS" mcc="730" mnc="01" apn="mms.entelpcs.cl" user="entelmms" password="entelpcs" mmsc="http://mmsc.entelpcs.cl" mmsproxy="10.99.0.10" mmsport="8080" type="mms" />
   <apn carrier="Movistar CL" mcc="730" mnc="02" apn="web.tmovil.cl" user="web" password="web" type="default,supl" />
