@@ -167,6 +167,7 @@ PRODUCT_PACKAGES += \
 # Optional CM packages
 PRODUCT_PACKAGES += \
     Basic \
+    LiveWallpapers \
     LiveWallpapersPicker
 
 # Custom CM packages
