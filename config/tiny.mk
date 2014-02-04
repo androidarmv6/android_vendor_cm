@@ -139,6 +139,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     Basic \
     libemoji \
+    LiveWallpapers \
     LiveWallpapersPicker
 
 # Custom CM packages
