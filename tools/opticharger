@@ -43,6 +43,13 @@ then
     echo -e $CL_RED"Invalid path to apkcerts.txt, set APKCERTS to the correct path."$CL_RST
 fi
 
+lossy_optimize_png () {
+    if [ "$(which pngquant)" != "" ];
+    then
+        pngquant --speed 1 --force --ext .png $1 1> /dev/null 2> /dev/null
+    fi
+}
+
 if [ "$(which pngcrush)" != "" ];
 then
     optimize_png () {
@@ -132,8 +139,16 @@ then
     for x in `find . -name "*.png" | grep -v "\.9.png$" | tr "\n" " "`
     do
         [ $QUIET ] || echo -e $CL_YLW"Crushing $x"$CL_RST
+        lossy_optimize_png $x
         optimize_png $x
     done
+
+    for x in `find . -name "*.9.png" | tr "\n" " "`
+    do
+        [ $QUIET ] || echo -e $CL_YLW"Crushing (9patch) $x"$CL_RST
+        lossy_optimize_png $x
+    done
+
     cp "$BASE/$1" "$BASE/$1.old"
 
     [ $QUIET ] || echo -e $CL_YLW"Repacking apk.."$CL_RST
