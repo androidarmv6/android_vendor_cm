@@ -66,6 +66,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.build.selinux=1
 
+# Thank you, please drive thru!
+PRODUCT_PROPERTY_OVERRIDES += persist.sys.dun.override=0
+
 #ifneq ($(TARGET_BUILD_VARIANT),eng)
 ## Enable ADB authentication
 #ADDITIONAL_DEFAULT_PROPERTIES += ro.adb.secure=1
@@ -92,10 +95,6 @@ PRODUCT_COPY_FILES += \
 # userinit support
 PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/etc/init.d/90userinit:system/etc/init.d/90userinit
-
-# SELinux filesystem labels
-PRODUCT_COPY_FILES += \
-    vendor/cm/prebuilt/common/etc/init.d/50selinuxrelabel:system/etc/init.d/50selinuxrelabel
 
 # CM-specific init file
 PRODUCT_COPY_FILES += \
@@ -160,6 +159,7 @@ PRODUCT_PACKAGES += \
 
 # Extra tools in CM
 PRODUCT_PACKAGES += \
+    libsepol \
     openvpn \
     e2fsck \
     mke2fs \
@@ -297,19 +297,21 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 CM_DISPLAY_VERSION := $(CM_VERSION)
 
-ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),)
-ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/testkey)
+ifneq ($(PRODUCT_DEFAULT_DEV_CERTIFICATE),)
+ifneq ($(PRODUCT_DEFAULT_DEV_CERTIFICATE),build/target/product/security/testkey)
   ifneq ($(CM_BUILDTYPE), UNOFFICIAL)
     ifndef TARGET_VENDOR_RELEASE_BUILD_ID
       ifneq ($(CM_EXTRAVERSION),)
+        # Remove leading dash from CM_EXTRAVERSION
+        CM_EXTRAVERSION := $(shell echo $(CM_EXTRAVERSION) | sed 's/-//')
         TARGET_VENDOR_RELEASE_BUILD_ID := $(CM_EXTRAVERSION)
       else
-        TARGET_VENDOR_RELEASE_BUILD_ID := -$(shell date -u +%Y%m%d)
+        TARGET_VENDOR_RELEASE_BUILD_ID := $(shell date -u +%Y%m%d)
       endif
     else
-      TARGET_VENDOR_RELEASE_BUILD_ID := -$(TARGET_VENDOR_RELEASE_BUILD_ID)
+      TARGET_VENDOR_RELEASE_BUILD_ID := $(TARGET_VENDOR_RELEASE_BUILD_ID)
     endif
-    CM_DISPLAY_VERSION=$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)$(TARGET_VENDOR_RELEASE_BUILD_ID)
+    CM_DISPLAY_VERSION=$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(TARGET_VENDOR_RELEASE_BUILD_ID)
   endif
 endif
 endif
