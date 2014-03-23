@@ -14,6 +14,7 @@ QUIET=1
 BASE=`pwd`
 BRUTECRUSH="-brute"
 TMPDIR=/tmp/opticharge-$$
+NINEPATCH=0
 
 . "$ANDROID_BUILD_TOP"/vendor/cm/tools/functions
 
@@ -143,11 +144,13 @@ then
         optimize_png $x
     done
 
-    for x in `find . -name "*.9.png" | tr "\n" " "`
-    do
-        [ $QUIET ] || echo -e $CL_YLW"Crushing (9patch) $x"$CL_RST
-        lossy_optimize_png $x
-    done
+    if [ "$NINEPATCH" = "1" ]; then
+        for x in `find . -name "*.9.png" | tr "\n" " "`
+        do
+            [ $QUIET ] || echo -e $CL_YLW"Crushing (9patch) $x"$CL_RST
+            lossy_optimize_png $x
+        done
+    fi
 
     cp "$BASE/$1" "$BASE/$1.old"
 
