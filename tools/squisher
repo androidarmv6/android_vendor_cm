@@ -39,7 +39,7 @@ DELETE_BINS="applypatch applypatch_static check_prereq recovery updater"
 rm -rf "$OUT"/system/extras
 
 # Delete files defined in custom squisher extras list
-if [ -f "$TARGET_OTA_EXTRAS_FILE" -a ! -z "$OTA_PACKAGE_SIGNING_KEY" ]; then
+if [ -f "$TARGET_OTA_EXTRAS_FILE" ]; then
     for FILE in `cat "$TARGET_OTA_EXTRAS_FILE" | grep -v ^# | grep -v ^$`; do
         EXTRAS="$EXTRAS $FILE"
     done
