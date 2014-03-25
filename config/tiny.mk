@@ -126,6 +126,11 @@ include vendor/cm/config/themes_common.mk
 
 include frameworks/base/data/sounds/OriginalAudio.mk
 
+# Default notification/alarm/ringtone sounds
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.config.notification_sound=Alya.ogg \
+    ro.config.alarm_alert=Alarm_Rooster_02.ogg
+
 # APNs
 $(call inherit-product, vendor/cm/config/telephony.mk)
 
