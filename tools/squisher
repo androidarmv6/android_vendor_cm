@@ -38,12 +38,4 @@ DELETE_BINS="applypatch applypatch_static check_prereq recovery updater"
 # We should fix the build to stop this from being installed in the first place
 rm -rf "$OUT"/system/extras
 
-# Delete files defined in custom squisher extras list
-if [ -f "$TARGET_OTA_EXTRAS_FILE" -a ! -z "$OTA_PACKAGE_SIGNING_KEY" ]; then
-    for FILE in `cat "$TARGET_OTA_EXTRAS_FILE" | grep -v ^# | grep -v ^$`; do
-        EXTRAS="$EXTRAS $FILE"
-    done
-    ( cd "$OUT"/system; echo $EXTRAS | xargs rm -f; )
-fi
-
 exit 0
