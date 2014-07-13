@@ -10,7 +10,7 @@
 # ChrisSoyars - me@ctso.me
 
 set -e
-QUIET=1
+QUIET=
 BASE=`pwd`
 BRUTECRUSH="-brute"
 TMPDIR=/tmp/opticharge-$$
@@ -96,7 +96,9 @@ then
 
     if [ "$2" != "" ];
     then
-        if [ "$DEFAULT_SYSTEM_DEV_CERTIFICATE" ]; then
+        if [ "$PRODUCT_DEFAULT_DEV_CERTIFICATE" ]; then
+            CERT_PATH=`dirname "$PRODUCT_DEFAULT_DEV_CERTIFICATE"`
+        elif [ "$DEFAULT_SYSTEM_DEV_CERTIFICATE" ]; then
             CERT_PATH=`dirname "$DEFAULT_SYSTEM_DEV_CERTIFICATE"`
         else
             CERT_PATH=build/target/product/security
