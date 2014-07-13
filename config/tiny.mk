@@ -91,6 +91,10 @@ endif
 PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/bin/otasigcheck.sh:system/bin/otasigcheck.sh
 
+ifeq ($(SIGN_BUILD),true)
+PRODUCT_DEFAULT_DEV_CERTIFICATE := build_env/keys/releasekey
+endif
+
 # init.d support
 PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/etc/init.d/00banner:system/etc/init.d/00banner \
