@@ -66,6 +66,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.build.selinux=1
 
+# Disable multithreaded dexopt by default
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.dalvik.multithread=false
+
 # Thank you, please drive thru!
 PRODUCT_PROPERTY_OVERRIDES += persist.sys.dun.override=0
 
@@ -226,7 +230,7 @@ PRODUCT_PACKAGE_OVERLAYS += vendor/cm/overlay/common
 
 PRODUCT_VERSION_MAJOR = 11
 PRODUCT_VERSION_MINOR = 0
-PRODUCT_VERSION_MAINTENANCE = 0-RC8
+PRODUCT_VERSION_MAINTENANCE = 0-RC9
 
 # Set CM_BUILDTYPE from the env RELEASE_TYPE, for jenkins compat
 
@@ -328,12 +332,6 @@ PRODUCT_PROPERTY_OVERRIDES += persist.sys.recovery_update=false
 
 PRODUCT_PROPERTY_OVERRIDES += \
   ro.cm.display.version=$(CM_DISPLAY_VERSION)
-
-# disable multithreaded dextop for RELEASE and SNAPSHOT builds
-ifneq ($(filter RELEASE SNAPSHOT,$(CM_BUILDTYPE)),)
-PRODUCT_PROPERTY_OVERRIDES += \
-  persist.sys.dalvik.multithread=false
-endif
 
 -include $(WORKSPACE)/hudson/image-auto-bits.mk
 
