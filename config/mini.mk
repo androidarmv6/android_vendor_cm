@@ -1,10 +1,5 @@
 # Mini config (Required /system size: min=175MB)
 
-# Terminal Emulator
-PRODUCT_COPY_FILES +=  \
-    vendor/cm/proprietary/Term.apk:system/app/Term/Term.apk \
-    vendor/cm/proprietary/lib/armeabi/libjackpal-androidterm4.so:system/app/Term/lib/arm/libjackpal-androidterm4.so
-
 PRODUCT_PACKAGES += \
     DSPManager \
     libcyanogen-dsp \
