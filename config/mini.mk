@@ -1,13 +1,12 @@
 # Mini config (Required /system size: min=175MB)
 
 PRODUCT_PACKAGES += \
-    DSPManager \
-    libcyanogen-dsp \
-    audio_effects.conf \
+    AudioFX \
     Apollo \
     CMFileManager \
     Basic \
-    LockClock
+    LockClock \
+    Terminal
 
 PRODUCT_PACKAGES += \
     CellBroadcastReceiver
